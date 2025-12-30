@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>Booking detail</h1>
+  <p>Company: {{ booking.company_name|escape }}</p>
+  <p>Booth: {{ booking.booth_type }}</p>
+  <p>Date: {{ booking.event_date }}</p>
+  <p>Notes: {{ booking.notes|linebreaksbr }}</p>
+  {% if user.is_staff or booking.owner == user %}
+    <a href="{% url 'booking_update' booking.pk %}">Edit</a>
+    <form method="post" action="{% url 'booking_delete' booking.pk %}" style="display:inline">{% csrf_token %}
+      <button type="submit">Delete</button>
+    </form>
+  {% endif %}
+  <p><a href="{% url 'booking_list' %}">Back to list</a></p>
+{% endblock %}

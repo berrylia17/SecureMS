@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Welcome to SecureMS</h1>
+
+<p>
+    <a href="{% url 'booking_list' %}">Go to Booking System</a> |
+    <a href="{% url 'login' %}">Login</a> |
+    <a href="/admin/">Admin Panel</a>
+
+</p>
+{% endblock %}

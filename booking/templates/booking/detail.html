@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Booking Details</h1>
+<p>Booth type: {{ booking.booth_type }}</p>
+<p>Date: {{ booking.date }}</p>
+<p>Notes: {{ booking.notes|linebreaks }}</p>
+<p>Created at: {{ booking.created_at }}</p>
+<p>Owner: {{ booking.user.username }}</p>
+<p><a href="{% url 'booking:list' %}">Back</a></p>
+{% endblock %}

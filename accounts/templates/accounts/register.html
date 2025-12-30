@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Register</h1>
+
+{% if messages %}
+  {% for m in messages %}
+    <div class="message">{{ m }}</div>
+  {% endfor %}
+{% endif %}
+
+<form method="post">
+  {% csrf_token %}
+
+  <p>
+    {{ form.username.label_tag }}<br>
+    {{ form.username }}<br>
+    {{ form.username.errors }}
+  </p>
+
+  <p>
+    {{ form.password1.label_tag }}<br>
+    {{ form.password1 }}<br>
+    {{ form.password1.errors }}
+  </p>
+
+  <p>
+    {{ form.password2.label_tag }}<br>
+    {{ form.password2 }}<br>
+    {{ form.password2.errors }}
+  </p>
+
+  <button type="submit">Register</button>
+</form>
+
+<br>
+<a href="/">🏠 Home</a> | <a href="{% url 'login' %}">Login</a>
+
+{% endblock %}
+
+
+

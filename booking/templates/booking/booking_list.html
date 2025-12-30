@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>Your Bookings</h1>
+  {% if user.is_staff %}
+    <p><strong>Admin view: all bookings</strong></p>
+  {% endif %}
+  <p><a href="{% url 'booking_create' %}">Create new booking</a></p>
+  <ul>
+    {% for b in bookings %}
+      <li>
+        <a href="{% url 'booking_detail' b.pk %}">{{ b.company_name|escape }} - {{ b.booth_type }} - {{ b.event_date }}</a>
+      </li>
+    {% empty %}
+      <li>No bookings yet.</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

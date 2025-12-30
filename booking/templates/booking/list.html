@@ -1,0 +1,13 @@
+<h2>Your Bookings</h2>
+<p><a href="{% url 'booking_create' %}">Create booking</a></p>
+<ul>
+{% for b in bookings %}
+  <li>
+    {{ b.booth_type }} — {{ b.date }} — owner: {{ b.user.username }}
+    <a href="{% url 'booking_edit' b.pk %}">Edit</a>
+    <a href="{% url 'booking_delete' b.pk %}">Delete</a>
+  </li>
+{% empty %}
+  <li>No bookings yet.</li>
+{% endfor %}
+</ul>
