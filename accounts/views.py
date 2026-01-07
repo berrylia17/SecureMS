@@ -5,9 +5,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
+from django.http import HttpResponse
 import random
 
 from .forms import RegisterForm, ProfileUpdateForm   # your custom forms
+from ratelimit.decorators import ratelimit
 
 
 # Utility: generate MFA code
@@ -16,8 +18,6 @@ def generate_mfa_code():
 
 
 # Register new user
-from django.core.mail import send_mail
-
 def register_view(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
@@ -40,9 +40,13 @@ def register_view(request):
     return render(request, "accounts/register.html", {"form": form})
 
 
-
-# Login with MFA
+# Login with MFA (rate limited: 5 attempts/minute per IP)
+@ratelimit(key='ip', rate='5/m', block=True)
 def login_view(request):
+    if getattr(request, 'limited', False):
+        messages.error(request, "Too many login attempts. Please wait before trying again.")
+        return render(request, "accounts/login.html")
+
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
@@ -69,8 +73,13 @@ def login_view(request):
     return render(request, "accounts/login.html")
 
 
-# MFA verification
+# MFA verification (rate limited: 3 attempts/minute per IP)
+@ratelimit(key='ip', rate='3/m', block=True)
 def mfa_verify_view(request):
+    if getattr(request, 'limited', False):
+        messages.error(request, "Too many MFA attempts. Please wait before trying again.")
+        return render(request, "accounts/mfa_verify.html")
+
     if request.method == "POST":
         entered_code = request.POST.get("code")
         if entered_code == request.session.get("mfa_code"):
@@ -79,11 +88,10 @@ def mfa_verify_view(request):
             login(request, user)
             messages.success(request, "Login successful with MFA.")
             # Redirect to home.html
-            return redirect("home")  
+            return redirect("home")
         else:
             messages.error(request, "Invalid MFA code.")
     return render(request, "accounts/mfa_verify.html")
-
 
 
 # Logout user
@@ -119,3 +127,11 @@ def change_password_view(request):
     else:
         form = PasswordChangeForm(user=request.user)
     return render(request, "accounts/change_password.html", {"form": form})
+
+
+# Isolated test view for rate limiting
+@ratelimit(key='ip', rate='2/m', block=True)
+def test_view(request):
+    if getattr(request, 'limited', False):
+        return HttpResponse("Rate limit exceeded", status=429)
+    return HttpResponse("OK")

@@ -6,6 +6,7 @@ from .views import (
     change_password_view,
     login_view,
     mfa_verify_view,
+    test_view,
 )
 
 urlpatterns = [
@@ -24,4 +25,7 @@ urlpatterns = [
 
     # Password change
     path('change-password/', change_password_view, name='change_password'),
+    
+    #Rate Limit Testing
+    path("test/", test_view, name="test"),
 ]
