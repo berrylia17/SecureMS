@@ -1,42 +1,51 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
-<h1>Register</h1>
+<div class="container mt-5">
+    <h2>Register</h2>
+    <p>Create your account below:</p>
 
-{% if messages %}
-  {% for m in messages %}
-    <div class="message">{{ m }}</div>
-  {% endfor %}
-{% endif %}
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
 
-<form method="post">
-  {% csrf_token %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
 
-  <p>
-    {{ form.username.label_tag }}<br>
-    {{ form.username }}<br>
-    {{ form.username.errors }}
-  </p>
+        <div class="form-group mb-3">
+            <label for="id_username">Username:</label>
+            {{ form.username }}
+            <div class="text-danger">{{ form.username.errors }}</div>
+        </div>
 
-  <p>
-    {{ form.password1.label_tag }}<br>
-    {{ form.password1 }}<br>
-    {{ form.password1.errors }}
-  </p>
+        <div class="form-group mb-3">
+            <label for="id_email">Email:</label>
+            {{ form.email }}
+            <div class="text-danger">{{ form.email.errors }}</div>
+        </div>
 
-  <p>
-    {{ form.password2.label_tag }}<br>
-    {{ form.password2 }}<br>
-    {{ form.password2.errors }}
-  </p>
+        <div class="form-group mb-3">
+            <label for="id_password1">Password:</label>
+            {{ form.password1 }}
+            <div class="text-danger">{{ form.password1.errors }}</div>
+        </div>
 
-  <button type="submit">Register</button>
-</form>
+        <div class="form-group mb-3">
+            <label for="id_password2">Password confirmation:</label>
+            {{ form.password2 }}
+            <div class="text-danger">{{ form.password2.errors }}</div>
+        </div>
 
-<br>
-<a href="/">🏠 Home</a> | <a href="{% url 'login' %}">Login</a>
+        <button type="submit" class="btn btn-primary mt-3">Register</button>
+    </form>
 
+    <hr>
+    <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+</div>
 {% endblock %}
-
-
-
