@@ -14,7 +14,8 @@
       {% endfor %}
     {% endif %}
 
-    <form method="post">
+    <!-- novalidate disables browser-side validation so backend logging runs -->
+    <form method="post" novalidate>
         {% csrf_token %}
         {{ form.non_field_errors }}
 

@@ -7,9 +7,13 @@ from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.http import HttpResponse
 import random
+import logging
 
 from .forms import RegisterForm, ProfileUpdateForm   # your custom forms
 from ratelimit.decorators import ratelimit
+
+# Logger for accounts app
+logger = logging.getLogger('accounts')
 
 
 # Utility: generate MFA code
@@ -35,6 +39,13 @@ def register_view(request):
 
             messages.success(request, "Account created successfully. Please log in.")
             return redirect("login")
+        else:
+            # Log invalid attempts for audit trail
+            for field, errors in form.errors.items():
+                for error in errors:
+                    logger.warning(
+                        f"Invalid input on registration: field={field}, error={error}, ip={request.META.get('REMOTE_ADDR')}, path={request.path}"
+                    )
     else:
         form = RegisterForm()
     return render(request, "accounts/register.html", {"form": form})
@@ -69,6 +80,9 @@ def login_view(request):
             # Step 3: redirect to MFA verification page
             return redirect("mfa_verify")
         else:
+            logger.warning(
+                f"Invalid login attempt: username={username}, ip={request.META.get('REMOTE_ADDR')}, path={request.path}"
+            )
             messages.error(request, "Invalid username or password.")
     return render(request, "accounts/login.html")
 
@@ -90,6 +104,9 @@ def mfa_verify_view(request):
             # Redirect to home.html
             return redirect("home")
         else:
+            logger.warning(
+                f"Invalid MFA attempt: code={entered_code}, ip={request.META.get('REMOTE_ADDR')}, path={request.path}"
+            )
             messages.error(request, "Invalid MFA code.")
     return render(request, "accounts/mfa_verify.html")
 
@@ -109,6 +126,12 @@ def edit_profile_view(request):
             form.save()
             messages.success(request, "Profile updated successfully.")
             return redirect("edit_profile")
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    logger.warning(
+                        f"Invalid profile update: field={field}, error={error}, user={request.user.username}, ip={request.META.get('REMOTE_ADDR')}, path={request.path}"
+                    )
     else:
         form = ProfileUpdateForm(instance=request.user)
     return render(request, "accounts/edit_profile.html", {"form": form})
@@ -124,6 +147,12 @@ def change_password_view(request):
             update_session_auth_hash(request, user)  # keep user logged in
             messages.success(request, "Password changed successfully.")
             return redirect("change_password")
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    logger.warning(
+                        f"Invalid password change: field={field}, error={error}, user={request.user.username}, ip={request.META.get('REMOTE_ADDR')}, path={request.path}"
+                    )
     else:
         form = PasswordChangeForm(user=request.user)
     return render(request, "accounts/change_password.html", {"form": form})
@@ -133,5 +162,8 @@ def change_password_view(request):
 @ratelimit(key='ip', rate='2/m', block=True)
 def test_view(request):
     if getattr(request, 'limited', False):
+        logger.warning(
+            f"Rate limit exceeded: ip={request.META.get('REMOTE_ADDR')}, path={request.path}"
+        )
         return HttpResponse("Rate limit exceeded", status=429)
     return HttpResponse("OK")

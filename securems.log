@@ -1,0 +1,18 @@
+INFO 2026-01-07 20:33:23,196 autoreload Watching for file changes with StatReloader
+INFO 2026-01-07 20:34:23,128 autoreload /home/kali/Desktop/securems_share/securems/settings.py changed, reloading.
+INFO 2026-01-07 20:34:23,498 autoreload Watching for file changes with StatReloader
+INFO 2026-01-07 20:35:14,938 autoreload Watching for file changes with StatReloader
+INFO 2026-01-07 21:07:36,588 autoreload /home/kali/Desktop/securems_share/accounts/forms.py changed, reloading.
+INFO 2026-01-07 21:07:36,937 autoreload Watching for file changes with StatReloader
+INFO 2026-01-07 21:08:59,091 autoreload /home/kali/Desktop/securems_share/accounts/forms.py changed, reloading.
+INFO 2026-01-07 21:08:59,428 autoreload Watching for file changes with StatReloader
+INFO 2026-01-07 21:09:51,904 autoreload /home/kali/Desktop/securems_share/accounts/forms.py changed, reloading.
+INFO 2026-01-07 21:09:52,243 autoreload Watching for file changes with StatReloader
+INFO 2026-01-07 21:10:14,496 basehttp "GET / HTTP/1.1" 200 596
+WARNING 2026-01-07 21:10:15,036 log Not Found: /favicon.ico
+INFO 2026-01-07 21:10:17,906 basehttp "GET /accounts/register/ HTTP/1.1" 200 1973
+INFO 2026-01-07 21:14:35,298 autoreload /home/kali/Desktop/securems_share/securems/settings.py changed, reloading.
+WARNING 2026-01-07 21:30:51,051 views Invalid input on registration: field=username, error=Username must be 3–20 characters, letters/numbers/underscores only., ip=127.0.0.1, path=/accounts/register/
+WARNING 2026-01-07 21:30:51,052 views Invalid input on registration: field=email, error=Enter a valid email address., ip=127.0.0.1, path=/accounts/register/
+WARNING 2026-01-07 21:30:51,052 views Invalid input on registration: field=password1, error=This field is required., ip=127.0.0.1, path=/accounts/register/
+WARNING 2026-01-07 21:30:51,053 views Invalid input on registration: field=password2, error=This field is required., ip=127.0.0.1, path=/accounts/register/

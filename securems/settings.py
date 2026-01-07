@@ -24,9 +24,7 @@ except Exception:
 # Quick-start development settings - unsuitable for production
 # -------------------------------------------------------------------
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env('SECRET_KEY', default='unsafe-default-for-dev-only')
-
 DEBUG = env.bool('DEBUG', default=False)
 ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['127.0.0.1'])
 
@@ -49,7 +47,6 @@ INSTALLED_APPS = [
     # third-party
     'rest_framework',
     'csp',
-
     # 'axes',  # temporarily disabled to allow stable migrations
 ]
 
@@ -140,24 +137,27 @@ CSRF_COOKIE_SECURE = False     # set True in production
 CSRF_COOKIE_SAMESITE = 'Lax'
 
 SECURE_SSL_REDIRECT = False    # set True in production
-SECURE_HSTS_SECONDS = 31536000
+SECURE_HSTS_SECONDS = 0        # keep 0 in dev, set 31536000 in production
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 
 X_FRAME_OPTIONS = 'DENY'
-SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_REFERRER_POLICY = "same-origin"
 
 # -------------------------------------------------------------------
-# Content Security Policy
+# Content Security Policy (django-csp v4+)
 # -------------------------------------------------------------------
 CONTENT_SECURITY_POLICY = {
     "DIRECTIVES": {
         "default-src": ("'self'",),
         "script-src": ("'self'",),
-        "style-src": ("'self'",),
+        "style-src": ("'self'", "https://fonts.googleapis.com"),
+        "font-src": ("'self'", "https://fonts.gstatic.com"),
     }
 }
+
+
 
 # -------------------------------------------------------------------
 # Email backend (development MFA)
@@ -192,3 +192,45 @@ REST_FRAMEWORK = {
         'anon': '20/hour',
     },
 }
+
+# -------------------------------------------------------------------
+# Logging / Audit trail
+# -------------------------------------------------------------------
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'WARNING',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'securems.log',
+            'formatter': 'verbose',
+        },
+        'console': {
+            'level': 'WARNING',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file', 'console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'accounts': {
+            'handlers': ['file', 'console'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+    },
+}
+
+
+
